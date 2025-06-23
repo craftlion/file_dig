@@ -1,6 +1,11 @@
 [package]
 name = "file_dig"
 version = "0.1.0"
+authors = ["CraftLion"]
+description = "Find file paths in directory trees using search criteria"
+license = "MIT"
+repository = "https://github.com/craftlion/file_dig"
+homepage = "https://github.com/craftlion/file_dig"
 edition = "2024"
 
 [dependencies]
