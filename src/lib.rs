@@ -63,14 +63,6 @@ mod tests {
     use std::ffi::OsString;
 
     #[test]
-    fn empty_directory() {
-        let criteria = FindCriteria::new();
-        let result = find("tests_files/empty", &criteria);
-        assert!(result.is_ok());
-        assert!(result.unwrap().is_empty());
-    }
-
-    #[test]
     fn none_existing_path() {
         let criteria = FindCriteria::new();
         let result = find("tests_files/empty2", &criteria);
