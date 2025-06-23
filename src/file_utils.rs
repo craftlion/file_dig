@@ -2,26 +2,34 @@ use crate::file_criteria::FindCriteria;
 use std::ffi::OsString;
 
 pub fn accept(file: &std::fs::DirEntry, criteria: &FindCriteria) -> bool {
-    if let Some(file_name) = &criteria.file_name {
+    if let Some(file_name) = criteria.file_name.as_ref() {
         if !contains(&file.file_name(), file_name) {
             return false;
         }
     }
 
-    if let Some(extension) = &criteria.file_extension {
+    if let Some(extension) = criteria.file_extension.as_ref() {
         if file.path().extension() != Some(extension) {
             return false;
         }
     }
 
     if let Some(size_min) = criteria.file_size_minimum {
-        if file.metadata().map_or(true, |m| m.len() < size_min) {
+        if let Ok(metadata) = file.metadata() {
+            if metadata.len() < size_min {
+                return false;
+            }
+        } else {
             return false;
         }
     }
 
     if let Some(size_max) = criteria.file_size_maximum {
-        if file.metadata().map_or(true, |m| m.len() > size_max) {
+        if let Ok(metadata) = file.metadata() {
+            if metadata.len() > size_max {
+                return false;
+            }
+        } else {
             return false;
         }
     }
