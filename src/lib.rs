@@ -1,4 +1,4 @@
-mod file_criteria;
+pub mod file_criteria;
 mod file_utils;
 
 use file_criteria::FindCriteria;
