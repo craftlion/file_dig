@@ -10,8 +10,8 @@ pub struct FindCriteria {
 }
 
 impl FindCriteria {
-    pub fn new() -> FindCriteria {
-        FindCriteria {
+    pub fn new() -> Self {
+        Self {
             recursive: true,
             file_name: None,
             file_extension: None,
@@ -20,8 +20,8 @@ impl FindCriteria {
         }
     }
 
-    pub fn new_with_recursive(recursive: bool) -> FindCriteria {
-        FindCriteria {
+    pub fn new_with_recursive(recursive: bool) -> Self {
+        Self {
             recursive,
             file_name: None,
             file_extension: None,
@@ -30,38 +30,37 @@ impl FindCriteria {
         }
     }
 
-    pub fn recursive(mut self, recursive: bool) -> FindCriteria {
+    pub fn recursive(mut self, recursive: bool) -> Self {
         self.recursive = recursive;
         self
     }
 
-    pub fn file_name(mut self, name: OsString) -> FindCriteria {
+    pub fn file_name(mut self, name: OsString) -> Self {
         self.file_name = Some(name);
         self
     }
 
-    pub fn file_extension(mut self, extension: OsString) -> FindCriteria {
+    pub fn file_extension(mut self, extension: OsString) -> Self {
         self.file_extension = Some(extension);
         self
     }
 
-    pub fn file_size_minimum(mut self, size_minimum: u64) -> FindCriteria {
+    pub fn file_size_minimum(mut self, size_minimum: u64) -> Self {
         self.file_size_minimum = Some(size_minimum);
         self
     }
 
-    pub fn file_size_maximum(mut self, size_maximum: u64) -> FindCriteria {
+    pub fn file_size_maximum(mut self, size_maximum: u64) -> Self {
         self.file_size_maximum = Some(size_maximum);
         self
     }
 }
 
-pub fn validate(search_criteria: &FindCriteria) -> Result<(), String> {
-    if search_criteria.file_size_minimum.is_some() && search_criteria.file_size_maximum.is_some() {
-        if search_criteria.file_size_minimum.unwrap() > search_criteria.file_size_maximum.unwrap() {
+pub fn validate(criteria: &FindCriteria) -> Result<(), String> {
+    if let (Some(min), Some(max)) = (criteria.file_size_minimum, criteria.file_size_maximum) {
+        if min > max {
             return Err("Minimum file size cannot be greater than maximum file size".to_string());
         }
     }
-
     Ok(())
 }
