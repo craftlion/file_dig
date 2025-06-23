@@ -69,29 +69,45 @@ mod tests {
     fn empty_directory() {
         let find_criteria: FindCriteria = FindCriteria::new();
         let result = find("tests_files/empty", &find_criteria);
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().is_empty(), true);
+        assert!(result.is_ok());
+        assert!(result.unwrap().is_empty());
     }
 
     #[test]
     fn none_existing_path() {
         let find_criteria: FindCriteria = FindCriteria::new();
         let result = find("tests_files/empty2", &find_criteria);
-        assert_eq!(result.is_err(), true);
+        assert!(result.is_err());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Path not found");
     }
 
     #[test]
     fn path_is_a_file() {
         let find_criteria: FindCriteria = FindCriteria::new();
         let result = find("tests_files/file", &find_criteria);
-        assert_eq!(result.is_err(), true);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Path is not a directory");
+    }
+
+    #[test]
+    fn validate_file_size_min_greater_than_max() {
+        let find_criteria = FindCriteria::new()
+            .file_size_minimum(200)
+            .file_size_maximum(100);
+        let result = file_criteria::validate(&find_criteria);
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err(),
+            "Minimum file size cannot be greater than maximum file size"
+        );
     }
 
     #[test]
     fn all_files() {
         let find_criteria: FindCriteria = FindCriteria::new();
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
         assert_eq!(result.unwrap().len(), 5);
     }
 
@@ -100,7 +116,7 @@ mod tests {
         let mut find_criteria: FindCriteria = FindCriteria::new();
         find_criteria = find_criteria.recursive(false);
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
         assert_eq!(result.unwrap().len(), 3);
     }
 
@@ -109,8 +125,8 @@ mod tests {
         let mut find_criteria: FindCriteria = FindCriteria::new();
         find_criteria = find_criteria.file_name(OsString::from("f"));
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().len(), 3);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
     }
 
     #[test]
@@ -118,48 +134,38 @@ mod tests {
         let mut find_criteria: FindCriteria = FindCriteria::new();
         find_criteria = find_criteria.file_extension(OsString::from("png"));
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().len(), 3);
-    }
-
-    #[test]
-    fn search_images() {
-        let mut find_criteria: FindCriteria = FindCriteria::new();
-        find_criteria = find_criteria.file_type(file_criteria::FileType::Image);
-        let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().len(), 3);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
     }
 
     #[test]
     fn search_size_min() {
         let mut find_criteria: FindCriteria = FindCriteria::new();
-        find_criteria = find_criteria.file_size_minimum(8);
+        find_criteria = find_criteria.file_size_minimum(89534);
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().len(), 3);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
     }
 
     #[test]
     fn search_size_max() {
         let mut find_criteria: FindCriteria = FindCriteria::new();
-        find_criteria = find_criteria.file_size_maximum(10);
+        find_criteria = find_criteria.file_size_maximum(89534);
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
-        assert_eq!(result.unwrap().len(), 3);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 4);
     }
 
     #[test]
     fn search_multiple_criteria() {
         let mut find_criteria: FindCriteria = FindCriteria::new();
         find_criteria = find_criteria
-            .file_name(OsString::from("f"))
+            .file_name(OsString::from("image"))
             .file_extension(OsString::from("png"))
-            .file_type(file_criteria::FileType::Image)
-            .file_size_minimum(8)
-            .file_size_maximum(10);
+            .file_size_minimum(89)
+            .file_size_maximum(100000);
         let result = find("tests_files", &find_criteria);
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
         assert_eq!(result.unwrap().len(), 1);
     }
 }

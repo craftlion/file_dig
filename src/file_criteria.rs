@@ -1,21 +1,10 @@
 use std::ffi::OsString;
 
 #[derive(Debug)]
-pub enum FileType {
-    Image,
-    Video,
-    Audio,
-    Document,
-    Archive,
-    Executable,
-}
-
-#[derive(Debug)]
 pub struct FindCriteria {
     pub recursive: bool,
     pub file_name: Option<OsString>,
     pub file_extension: Option<OsString>,
-    pub file_type: Option<FileType>,
     pub file_size_minimum: Option<u64>,
     pub file_size_maximum: Option<u64>,
 }
@@ -26,7 +15,6 @@ impl FindCriteria {
             recursive: true,
             file_name: None,
             file_extension: None,
-            file_type: None,
             file_size_minimum: None,
             file_size_maximum: None,
         }
@@ -37,7 +25,6 @@ impl FindCriteria {
             recursive,
             file_name: None,
             file_extension: None,
-            file_type: None,
             file_size_minimum: None,
             file_size_maximum: None,
         }
@@ -58,11 +45,6 @@ impl FindCriteria {
         self
     }
 
-    pub fn file_type(mut self, file_type: FileType) -> FindCriteria {
-        self.file_type = Some(file_type);
-        self
-    }
-
     pub fn file_size_minimum(mut self, size_minimum: u64) -> FindCriteria {
         self.file_size_minimum = Some(size_minimum);
         self
@@ -79,10 +61,6 @@ pub fn validate(search_criteria: &FindCriteria) -> Result<(), String> {
         if search_criteria.file_size_minimum.unwrap() > search_criteria.file_size_maximum.unwrap() {
             return Err("Minimum file size cannot be greater than maximum file size".to_string());
         }
-    }
-
-    if search_criteria.file_extension.is_some() && search_criteria.file_type.is_some() {
-        return Err("File extension and file type cannot be specified together".to_string());
     }
 
     Ok(())
