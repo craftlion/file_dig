@@ -1,5 +1,8 @@
 # file_dig
 
+[![Crates.io](https://img.shields.io/crates/v/file_dig.svg)](https://crates.io/crates/file_dig)
+[![Documentation](https://docs.rs/file_dig/badge.svg)](https://docs.rs/file_dig)
+
 A crate to help find files in a directory according to various criteria.
 
 ## Features
