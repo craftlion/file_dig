@@ -1,3 +1,4 @@
+use crate::FindError;
 use std::ffi::OsString;
 
 #[derive(Debug)]
@@ -56,10 +57,12 @@ impl FindCriteria {
     }
 }
 
-pub fn validate(criteria: &FindCriteria) -> Result<(), String> {
+pub fn validate(criteria: &FindCriteria) -> Result<(), FindError> {
     if let (Some(min), Some(max)) = (criteria.file_size_minimum, criteria.file_size_maximum) {
         if min > max {
-            return Err("Minimum file size cannot be greater than maximum file size".to_string());
+            return Err(FindError::InvalidCriteria(
+                "Minimum file size cannot be greater than maximum file size".to_string(),
+            ));
         }
     }
     Ok(())
